@@ -1,0 +1,16 @@
+services:
+
+  ollama:
+
+    # Use the ROCm-enabled Ollama image.
+    image: ollama/ollama:rocm
+
+    # Expose AMD GPU devices to the container.
+    devices:
+      - /dev/kfd
+      - /dev/dri
+
+    # Allow access to GPU device groups.
+    group_add:
+      - video
+      - render

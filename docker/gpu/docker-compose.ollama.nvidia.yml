@@ -1,0 +1,18 @@
+services:
+
+  ollama:
+
+    # NVIDIA GPU acceleration.
+    #
+    # Requires:
+    # - NVIDIA GPU
+    # - NVIDIA drivers
+    # - NVIDIA Container Toolkit
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
