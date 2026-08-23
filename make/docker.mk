@@ -74,7 +74,7 @@ docker-logs:
 # Cleanup
 # ============================================================
 
-.PHONY: docker-clean
+.PHONY: docker-clean docker-clean-openwebui
 
 docker-clean:
 	@echo
@@ -100,6 +100,39 @@ docker-clean:
 		$(COMPOSE_ENV) $(COMPOSE_CMD) down --rmi local; \
 		echo; \
 		echo "✅ Docker environment removed."; \
+	else \
+		echo; \
+		echo "❌ Cancelled."; \
+	fi
+
+docker-clean-openwebui:
+	@echo
+	@echo "🧹 Cleaning OpenWebUI"
+	@echo "===================="
+	@echo
+	@echo "This will remove:"
+	@echo "  🐳 OpenWebUI container"
+	@echo "  🖼️  OpenWebUI image"
+	@echo "  💾 OpenWebUI volume data"
+	@echo
+	@echo "It will KEEP:"
+	@echo "  🤖 Ollama container"
+	@echo "  🖼️  Ollama image"
+	@echo "  💾 Ollama volume"
+	@echo "  🤖 Ollama models"
+	@echo
+	@read -p "Type 'yes' to continue: " confirm; \
+	if [ "$$confirm" = "yes" ]; then \
+		echo; \
+		echo "🗑️  Removing OpenWebUI container..."; \
+		docker compose -p docker -f docker/docker-compose.openwebui.yml rm -sf open-webui; \
+		echo "🗑️  Removing OpenWebUI volume..."; \
+		docker volume rm -f docker_open-webui 2>/dev/null || true; \
+		echo "🗑️  Removing OpenWebUI image..."; \
+		docker image rm ghcr.io/open-webui/open-webui:main 2>/dev/null || true; \
+		echo; \
+		echo "✅ OpenWebUI removed."; \
+		echo "🤖 Ollama untouched."; \
 	else \
 		echo; \
 		echo "❌ Cancelled."; \
