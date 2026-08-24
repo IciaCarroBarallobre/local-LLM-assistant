@@ -29,6 +29,9 @@ check-env:
 		echo "  cp $(ENV_EXAMPLE) $(ENV_FILE)"; \
 		echo; \
 		echo "Then customize $(ENV_FILE) if needed."; \
+		printf "\033[1;33m⚠️  Web Search requires a configured search provider API key.\033[0m\n"; \
+		echo "   Without one, local models will work normally but will not have internet access."; \
+		exit 1; \
 		exit 1; \
 	fi
 	@echo "✅ Configuration found: $(ENV_FILE)"

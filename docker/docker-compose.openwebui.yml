@@ -5,11 +5,22 @@ services:
     restart: unless-stopped
 
     ports:
-      - "3000:8080"
+      - "${OPENWEBUI_PORT}:8080"
 
     environment:
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
+
+      # Web Search
+      - ENABLE_WEB_SEARCH=${ENABLE_WEB_SEARCH}
+      
+      - WEB_SEARCH_ENGINE=${WEB_SEARCH_ENGINE}
+      - EXA_API_KEY=${EXA_API_KEY}
+      - ENABLE_WEB_SEARCH_CONFIRMATION=false
+      
+      - OLLAMA_CONTEXT_LENGTH=${OLLAMA_CONTEXT_LENGTH}
+      - DEFAULT_MODEL_METADATA=${DEFAULT_MODEL_METADATA}
+      - DEFAULT_MODEL_PARAMS=${DEFAULT_MODEL_PARAMS}
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
