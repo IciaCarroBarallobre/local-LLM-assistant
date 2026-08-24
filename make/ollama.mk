@@ -40,7 +40,7 @@ ifeq ($(PLATFORM),mac)
 		echo "✅ Ollama is already installed."; \
 	fi
 else
-	@echo "🐳🦙 Ollama is managed by Docker."
+	@echo "🐳🦙 Ollama is managed by Docker, do: make setup."
 endif
 
 # ============================================================
@@ -101,27 +101,13 @@ ollama-download-models: wait-ollama
 	@echo "📦 Downloading Ollama models..."
 	@echo
 	@for model in $(OLLAMA_MODELS); do \
-		echo "  🤖 $$model"; \
-		$(OLLAMA_EXEC) pull "$$model" || exit 1; \
-		echo "  ✅ $$model ready"; \
+		if $(OLLAMA_EXEC) show "$$model" >/dev/null 2>&1; then \
+			echo "  ✅ $$model already exists"; \
+		else \
+			echo "  ⬇️  Downloading $$model"; \
+			$(OLLAMA_EXEC) pull "$$model" || exit 1; \
+			echo "  ✅ $$model ready"; \
+		fi; \
 		echo; \
 	done
 	@echo "🎉 All configured models are ready."
-
-ollama-models-size:
-	@echo
-	@echo "🦙 Ollama models"
-	@echo "================"
-	@echo
-
-ifeq ($(PLATFORM),mac)
-
-	@ollama list
-
-else
-
-	@docker exec $(OLLAMA_CONTAINER) ollama list
-
-endif
-
-	@echo
