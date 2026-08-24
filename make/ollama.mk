@@ -111,3 +111,16 @@ ollama-download-models: wait-ollama
 		echo; \
 	done
 	@echo "🎉 All configured models are ready."
+
+ollama-info:
+	@echo
+	@echo "🦙 Ollama"
+	@echo "========="
+	@echo
+	@$(OLLAMA_EXEC) --version
+	@echo
+	@$(OLLAMA_EXEC) list
+	@echo
+	@echo "⚡ Loaded models"
+	@$(OLLAMA_EXEC) ps
+	@echo

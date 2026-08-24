@@ -30,7 +30,7 @@ help:
 	@echo "  make ollama-stop             Stop Ollama"
 	@echo "  make ollama-download-models"
 	@echo "                               Download configured models"
-	@echo "  make ollama-models-size      Show installed models and sizes"
+	@echo "  make ollama-info             Show Ollama status, models and GPU usage"
 	@echo
 	@echo "💻 Continue"
 	@echo "  Install the Continue IDE extension for VS Code"

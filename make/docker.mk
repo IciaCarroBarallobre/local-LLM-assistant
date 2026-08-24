@@ -106,7 +106,7 @@ docker-clean:
 	fi
 
 docker-clean-openwebui:
-	@echo
+	@echo 	
 	@echo "🧹 Cleaning OpenWebUI"
 	@echo "===================="
 	@echo
