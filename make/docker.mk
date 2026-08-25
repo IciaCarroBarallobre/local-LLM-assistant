@@ -125,7 +125,7 @@ docker-clean-openwebui:
 	if [ "$$confirm" = "yes" ]; then \
 		echo; \
 		echo "🗑️  Removing OpenWebUI container..."; \
-		docker compose -p docker -f docker/docker-compose.openwebui.yml rm -sf open-webui; \
+		docker compose -p docker --env-file .env -f docker/docker-compose.openwebui.yml rm -sf open-webui; \
 		echo "🗑️  Removing OpenWebUI volume..."; \
 		docker volume rm -f docker_open-webui 2>/dev/null || true; \
 		echo "🗑️  Removing OpenWebUI image..."; \
