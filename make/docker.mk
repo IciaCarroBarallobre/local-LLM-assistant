@@ -77,63 +77,52 @@ docker-logs:
 .PHONY: docker-clean docker-clean-openwebui
 
 docker-clean:
-	@echo
-	@echo "🧹 Docker cleanup"
-	@echo "================="
-	@echo
-	@echo "This will remove:"
-	@echo "  🐳 Docker containers"
-	@echo "  💾 Docker volumes"
-	@echo "  🖼️  Docker images used by this project"
-	@echo "  🤖 Ollama models stored in Docker volumes"
-	@echo "  🌐 OpenWebUI data stored in Docker volumes"
-	@echo
-	@echo "⚠️  WARNING: This action cannot be undone."
-	@echo
+	@printf "\n"
+	@printf "🧹 Docker cleanup\n"
+	@printf "=================\n"
+	@printf "\n"
+	@printf "This will remove:\n"
+	@printf "  🐳 Docker containers\n"
+	@printf "  💾 Docker volumes (Ollama models on Linux)\n"
+	@printf "     Native Ollama models on macOS are kept.\n"
+	@printf "  🖼️  Docker images\n"
+	@printf "\n"
+	@printf "$(WARNING)WARNING: This action cannot be undone.$(RESET)\n"
+	@printf "\n"
 	@read -p "Type 'yes' to continue: " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
-		echo; \
-		echo "🗑️  Removing Docker environment..."; \
+		printf "\n"; \
+		printf "🗑️  Removing...\n"; \
 		$(COMPOSE_ENV) $(COMPOSE_CMD) down -v --remove-orphans; \
-		echo; \
-		echo "🖼️  Removing project images..."; \
 		$(COMPOSE_ENV) $(COMPOSE_CMD) down --rmi local; \
-		echo; \
-		echo "✅ Docker environment removed."; \
+		printf "$(SUCCESS)Docker environment removed.$(RESET)\n\n"; \
 	else \
-		echo; \
-		echo "❌ Cancelled."; \
+		printf "\n"; \
+		printf "$(ERROR)Cancelled.$(RESET)\n"; \
 	fi
 
 docker-clean-openwebui:
-	@echo 	
-	@echo "🧹 Cleaning OpenWebUI"
-	@echo "===================="
-	@echo
-	@echo "This will remove:"
-	@echo "  🐳 OpenWebUI container"
-	@echo "  🖼️  OpenWebUI image"
-	@echo "  💾 OpenWebUI volume data"
-	@echo
-	@echo "It will KEEP:"
-	@echo "  🤖 Ollama container"
-	@echo "  🖼️  Ollama image"
-	@echo "  💾 Ollama volume"
-	@echo "  🤖 Ollama models"
-	@echo
+	@printf "\n"
+	@printf "🧹 Cleaning OpenWebUI...\n"
+	@printf "==========================\n"
+	@printf "\n"
+	@printf "This will remove:\n"
+	@printf "  🐳 OpenWebUI container\n"
+	@printf "  🖼️  OpenWebUI image\n"
+	@printf "  💾 OpenWebUI volume\n"
+	@printf "\n"
+	@printf "It will keep:\n"
+	@printf "  🦙 Ollama container, image and models\n"
+	@printf "\n"
 	@read -p "Type 'yes' to continue: " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
-		echo; \
-		echo "🗑️  Removing OpenWebUI container..."; \
+		printf "\n"; \
 		docker compose -p docker --env-file .env -f docker/docker-compose.openwebui.yml rm -sf open-webui; \
-		echo "🗑️  Removing OpenWebUI volume..."; \
 		docker volume rm -f docker_open-webui 2>/dev/null || true; \
-		echo "🗑️  Removing OpenWebUI image..."; \
 		docker image rm ghcr.io/open-webui/open-webui:main 2>/dev/null || true; \
-		echo; \
-		echo "✅ OpenWebUI removed."; \
-		echo "🤖 Ollama untouched."; \
+		printf "\n"; \
+		printf "$(SUCCESS)OpenWebUI docker environment removed.$(RESET)\n\n"; \
 	else \
-		echo; \
-		echo "❌ Cancelled."; \
+		printf "\n"; \
+		printf "$(ERROR)Cancelled.$(RESET)\n"; \
 	fi
