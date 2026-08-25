@@ -22,6 +22,7 @@ else
 endif
 
 OLLAMA_URL := http://localhost:$(OLLAMA_PORT)
+
 # ============================================================
 # Installation
 # ============================================================
@@ -29,67 +30,66 @@ OLLAMA_URL := http://localhost:$(OLLAMA_PORT)
 ollama-install:
 ifeq ($(PLATFORM),mac)
 	@if ! command -v brew >/dev/null 2>&1; then \
-		echo "❌ Homebrew is not installed."; \
-		echo "Please install Homebrew first."; \
+		printf "$(ERROR)Homebrew is not installed.$(RESET)\n"; \
+		printf "   Please install Homebrew first.\n"; \
 		exit 1; \
 	fi
 	@if ! command -v ollama >/dev/null 2>&1; then \
-		echo "📦 Installing Ollama with Homebrew..."; \
+		printf "$(ACTION)Installing Ollama with Homebrew... 📦\n"; \
 		brew install ollama; \
 	else \
-		echo "✅ Ollama is already installed."; \
+		printf "$(INFO)Ollama is already installed.$(RESET)\n"; \
 	fi
 else
-	@echo "🐳🦙 Ollama is managed by Docker, do: make setup."
+	@printf "$(INFO)Ollama 🦙 is managed by Docker 🐳.$(RESET)\n"; \
+	printf "   Use: make setup\n"
 endif
 
 # ============================================================
 # Service Management
 # ============================================================
 
-ollama-start: ollama-install
+ollama-start:
 ifeq ($(PLATFORM),mac)
 
-	@echo "🚀 Starting Ollama..."
+	@printf "$(ACTION)Starting Ollama...\n"
 	@brew services start ollama
 
 else
 
-	@echo "🐳🦙 Ollama is managed by Docker Compose."
-	@echo "   Start services: make docker-up"
+	@printf "$(INFO)Ollama 🦙 is managed by Docker 🐳.$(RESET)\n"
+	@printf "   Start all services: make docker-up\n"
 
 endif
-
 
 ollama-stop:
 ifeq ($(PLATFORM),mac)
 
-	@echo "🛑 Stopping Ollama..."
+	@printf "$(ACTION)Stopping Ollama...\n"
 	@brew services stop ollama
 
 else
 
-	@echo "🐳🦙 Ollama is managed by Docker Compose."
-	@echo "   Stop services: make docker-down"
+	@printf "$(INFO)Ollama 🦙 is managed by Docker 🐳.$(RESET)\n"
+	@printf "   Stop all services: make docker-down\n"
 
 endif
-
 
 # ============================================================
 # Readiness
 # ============================================================
 
 wait-ollama:
-	@echo
-	@echo "⏳ Waiting for Ollama..."
+	@printf "\n"
+	@printf "$(ACTION)Waiting for Ollama..."
 	@for i in $$(seq 1 30); do \
 		if curl -fsS "$(OLLAMA_URL)/api/tags" >/dev/null 2>&1; then \
-			echo "✅ Ollama is ready."; \
+			printf " $(SUCCESS)Ready$(RESET)\n"; \
 			exit 0; \
 		fi; \
 		sleep 2; \
 	done; \
-	echo "❌ Ollama did not become ready."; \
+	printf "\n$(ERROR)Ollama did not become ready.$(RESET)\n"; \
 	exit 1
 
 # ============================================================
@@ -97,30 +97,28 @@ wait-ollama:
 # ============================================================
 
 ollama-download-models: wait-ollama
-	@echo
-	@echo "📦 Downloading Ollama models..."
-	@echo
+	@printf "\n"
+	@printf "$(ACTION)Downloading Ollama models...\n"
 	@for model in $(OLLAMA_MODELS); do \
 		if $(OLLAMA_EXEC) show "$$model" >/dev/null 2>&1; then \
-			echo "  ✅ $$model already exists"; \
+			printf "   • $$model already exists.\n"; \
 		else \
-			echo "  ⬇️  Downloading $$model"; \
+			printf "   • Downloading $$model...\n"; \
 			$(OLLAMA_EXEC) pull "$$model" || exit 1; \
-			echo "  ✅ $$model ready"; \
+			printf "   • $$model ready.\n"; \
 		fi; \
-		echo; \
 	done
-	@echo "🎉 All configured models are ready."
+	@printf "$(SUCCESS)All configured models are ready.$(RESET)\n"
 
 ollama-info:
-	@echo
-	@echo "🦙 Ollama"
-	@echo "========="
-	@echo
+	@printf "\n"
+	@printf "🦙 Ollama\n"
+	@printf "=========\n"
+	@printf "\n"
 	@$(OLLAMA_EXEC) --version
-	@echo
+	@printf "\n"
 	@$(OLLAMA_EXEC) list
-	@echo
-	@echo "⚡ Loaded models"
+	@printf "\n"
+	@printf "⚡ Loaded models\n"
 	@$(OLLAMA_EXEC) ps
-	@echo
+	@printf "\n"

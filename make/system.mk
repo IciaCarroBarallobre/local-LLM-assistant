@@ -101,32 +101,32 @@ endif
 .PHONY: system-info
 
 system-info:
-	@echo
-	@echo "🖥️  System"
-	@echo "   Platform:     $(PLATFORM)"
-	@echo "   CPU:          $(CPU_COUNT) physical cores"
-	@echo "   System RAM:   $(RAM_MB) MB"
-	@echo "   GPU backend:  $(GPU_BACKEND)"
-	@echo
-	@echo "🤖 Ollama"
+	@printf "\n"
+	@printf "🖥️  System\n"
+	@printf "   Platform:     %s\n" "$(PLATFORM)"
+	@printf "   CPU:          %s physical cores\n" "$(CPU_COUNT)"
+	@printf "   System RAM:   %s MB\n" "$(RAM_MB)"
+	@printf "   GPU backend:  %s\n" "$(GPU_BACKEND)"
+	@printf "\n"
+	@printf "🦙 Ollama\n"
 ifeq ($(PLATFORM),mac)
-	@echo "   Runtime:      Homebrew"
+	@printf "   Runtime:      Homebrew\n"
 else
-	@echo "   Runtime:      Docker"
+	@printf "   Runtime:      Docker\n"
 endif
-	@echo "   URL:          $(OLLAMA_BASE_URL)"
+	@printf "   URL:          %s\n" "$(OLLAMA_BASE_URL)"
 ifeq ($(OLLAMA_CPUS_SOURCE),auto)
-	@echo "   CPU:          $(OLLAMA_CPUS) cores"
-	@echo "                 ↳ Auto: using 100% of available physical cores"
+	@printf "   CPU:          %s cores\n" "$(OLLAMA_CPUS)"
+	@printf "                 ↳ Auto: using 100%% of available physical cores\n"
 else
-	@echo "   CPU:          $(OLLAMA_CPUS) cores"
-	@echo "                 ↳ Configured manually in .env"
+	@printf "   CPU:          %s cores\n" "$(OLLAMA_CPUS)"
+	@printf "                 ↳ Configured manually in .env\n"
 endif
 ifeq ($(OLLAMA_MEMORY_SOURCE),auto)
-	@echo "   RAM:          $(OLLAMA_MEMORY)"
-	@echo "                 ↳ Auto: using 70% of system RAM"
+	@printf "   RAM:          %s\n" "$(OLLAMA_MEMORY)"
+	@printf "                 ↳ Auto: using 70%% of system RAM\n"
 else
-	@echo "   RAM:          $(OLLAMA_MEMORY)"
-	@echo "                 ↳ Configured manually in .env"
+	@printf "   RAM:          %s\n" "$(OLLAMA_MEMORY)"
+	@printf "                 ↳ Configured manually in .env\n"
 endif
-	@echo
+	@printf "\n"
