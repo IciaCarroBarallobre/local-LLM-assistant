@@ -7,7 +7,7 @@
 ENV_FILE := .env
 ENV_EXAMPLE := .env.example
 
-setup: check-env ensure-openwebui-key system-info docker-up ollama-download-models continue
+setup: check-env ensure-openwebui-key system-info docker-up ollama-install ollama-download-models continue
 	@printf "\n"
 	@printf "$(SUCCESS)Setup complete!$(RESET) 🤖 Bip, bip.\n"
 	@printf "$(INFO)Visit OpenWebUI:$(RESET) http://localhost:$(OPENWEBUI_PORT)\n"

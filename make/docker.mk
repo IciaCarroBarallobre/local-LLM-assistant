@@ -56,6 +56,9 @@ COMPOSE_ENV := \
 .PHONY: docker-up docker-down docker-restart docker-status docker-logs
 
 docker-up:
+	@printf "════════════════════════════════════════\n"
+	@printf "$(ACTION) Setting up Docke services... 🐳\n"
+	@printf "════════════════════════════════════════\n"
 	$(COMPOSE_ENV) $(COMPOSE_CMD) up -d
 
 docker-down:
