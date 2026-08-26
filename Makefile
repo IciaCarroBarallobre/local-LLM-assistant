@@ -54,6 +54,12 @@ include make/ollama.mk
 include make/docker.mk
 
 # ------------------------------------------------------------
+# Continue
+# ------------------------------------------------------------
+# Configures Continue for local development with Ollama.
+include make/continue.mk
+
+# ------------------------------------------------------------
 # Initialization & Setup
 # ------------------------------------------------------------
 # Creates the environment and performs first-time setup.
