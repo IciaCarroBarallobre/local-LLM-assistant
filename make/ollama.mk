@@ -28,6 +28,10 @@ OLLAMA_URL := http://localhost:$(OLLAMA_PORT)
 # ============================================================
 
 ollama-install:
+	@printf "\n"
+	@printf "════════════════════════════════════════\n"
+	@printf "$(ACTION) Setting up Ollama... 🦙\n"
+	@printf "════════════════════════════════════════\n"
 ifeq ($(PLATFORM),mac)
 	@if ! command -v brew >/dev/null 2>&1; then \
 		printf "$(ERROR)Homebrew is not installed.$(RESET)\n"; \
@@ -41,8 +45,7 @@ ifeq ($(PLATFORM),mac)
 		printf "$(INFO)Ollama is already installed.$(RESET)\n"; \
 	fi
 else
-	@printf "$(INFO)Ollama 🦙 is managed by Docker 🐳.$(RESET)\n"; \
-	printf "   Use: make setup\n"
+	@printf "$(INFO)Ollama 🦙 is managed by Docker 🐳.$(RESET)\n"
 endif
 
 # ============================================================
