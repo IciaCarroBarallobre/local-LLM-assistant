@@ -1,0 +1,177 @@
+name: Local AI Assistant
+version: 0.0.1
+schema: v1
+
+# ==========================================================
+# Models
+# ==========================================================
+
+models:
+
+  # General-purpose coding model
+  - name: Qwen 3
+    provider: ollama
+    model: qwen3:8b
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+
+  # Main coding model
+  - name: Qwen 2.5 Coder
+    provider: ollama
+    model: qwen2.5-coder:7b
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+      - apply
+      - autocomplete
+
+  # Embedding model for project knowledge
+  - name: Nomic Embed
+    provider: ollama
+    model: nomic-embed-text:latest
+    apiBase: http://localhost:11434
+    roles:
+      - embed
+
+
+# ==========================================================
+# MCP Servers
+# ==========================================================
+
+mcpServers:
+
+  # --------------------------------------------------------
+  # WEB
+  # --------------------------------------------------------
+
+  # Search the web and documentation.
+  - name: Exa
+    type: streamable-http
+    url: https://mcp.exa.ai/mcp
+    apiKey: ${{ secrets.EXA_API_KEY }}
+    connectionTimeout: 30000
+
+  # Read the contents of a specific URL.
+  - name: Fetch
+    command: uvx
+    args:
+      - mcp-server-fetch
+
+
+  # --------------------------------------------------------
+  # GIT
+  # --------------------------------------------------------
+
+  # Work with the local Git repository:
+  # status, diff, log, branches, commits, etc.
+  - name: Git
+    command: uvx
+    args:
+      - mcp-server-git
+      - --repository
+      - .
+
+# ==========================================================
+# Optional MCP Servers
+# ==========================================================
+
+  # --------------------------------------------------------
+  # GITHUB
+  # --------------------------------------------------------
+
+  # Work with remote GitHub repositories:
+  # issues, pull requests, repositories, code search, etc.
+  #
+  # Requires Docker and GITHUB_TOKEN.
+  #- name: GitHub
+  #  command: docker
+  #  args:
+  #    - run
+  #    - -i
+  ##    - --rm
+  #    - -e
+  #    - GITHUB_PERSONAL_ACCESS_TOKEN
+  #    - ghcr.io/github/github-mcp-server
+  #  env:
+  #    GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+# ----------------------------------------------------------
+# PLAYWRIGHT
+# ----------------------------------------------------------
+#
+# Browser automation for dynamic websites.
+#
+# Requirements:
+#   - Node.js
+#   - npm / npx
+#
+# Enable when a project needs browser interaction,
+# JavaScript-heavy pages, logins, forms, etc.
+#
+# - name: Playwright
+#   command: npx
+#   args:
+#     - -y
+#     - "@playwright/mcp@latest"
+
+
+# ----------------------------------------------------------
+# FILESYSTEM
+# ----------------------------------------------------------
+#
+# Provides filesystem operations through MCP.
+#
+# Usually unnecessary because Continue already provides
+# workspace/file context. Enable only if a project has
+# a specific need for an MCP filesystem server.
+#
+# Requirements:
+#   - Node.js
+#   - npm / npx
+#
+# - name: Filesystem
+#   command: npx
+#   args:
+#     - -y
+#     - "@modelcontextprotocol/server-filesystem"
+#     - .
+
+
+# ----------------------------------------------------------
+# DATABASE
+# ----------------------------------------------------------
+#
+# Enable database MCPs only for projects that need them.
+#
+# PostgreSQL:
+#
+# - name: PostgreSQL
+#   command: ...
+#   args:
+#     - ...
+#
+# SQLite:
+#
+# - name: SQLite
+#   command: ...
+#   args:
+#     - ...
+
+
+# ----------------------------------------------------------
+# DOCKER
+# ----------------------------------------------------------
+#
+# Optional Docker MCP for inspecting/managing containers,
+# images, logs, networks, etc.
+#
+# Enable only if the AI needs to operate Docker directly.
+#
+# - name: Docker
+#   command: ...
+#   args:
+#     - ...

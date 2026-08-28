@@ -4,6 +4,22 @@ A local AI environment for chat, coding, reasoning, research, documentation and 
 
 The goal is simple: run AI locally, keep control of the models and infrastructure, and connect external tools only when they are actually needed.
 
+**📑 Table of Contents**
+
+- [Local LLM Assistant 🤖](#local-llm-assistant-)
+  - [Why do you want local AI?](#why-do-you-want-local-ai)
+  - [Architecture](#architecture)
+  - [Installation](#installation)
+    - [📋 Prerequisites](#-prerequisites)
+      - [Required](#required)
+    - [🎮 GPU \& Hardware Acceleration](#-gpu--hardware-acceleration)
+    - [🚀 Quick Start](#-quick-start)
+  - [Services](#services)
+    - [Continue](#continue)
+    - [OpenWebui](#openwebui)
+    - [Ollama](#ollama)
+
+
 ## Why do you want local AI?
 
 - 💰 **Lower cost**: no per-token API costs for local inference.
@@ -24,27 +40,17 @@ The goal is simple: run AI locally, keep control of the models and infrastructur
 > be a **more sustainable alternative** by reusing existing hardware and
 > reducing our reliance on cloud infrastructure.
 
-## How it works?
+## Architecture
 
-The environment is built around three main applications:
+The environment is built around three main components:
 
-- 🧠 **[Ollama](https://ollama.com/)** — the local AI engine. It downloads
-  and runs LLMs directly on your machine.
+- 🧠 **[Ollama](https://ollama.com/)** — the local AI engine. It runs and manages LLMs and embedding models locally and provides the API used by other applications.
 
-- 💬 **[Open WebUI](https://openwebui.com/)** — the main user interface.
-  It provides a Chat-like experience for conversations, projects, files,
-  knowledge bases, tools, and AI agents. It connects to Ollama to use your
-  local models and can also connect to external services when needed.
+- 💬 **[Open WebUI](https://openwebui.com/)** — the general-purpose AI interface for conversations, files, knowledge, web search, tools and AI agents.
 
-- 💻 **[Continue](https://docs.continue.dev/)** — the development interface.
-  It brings local models and AI agents directly into VS Code, allowing you
-  to use them for coding, codebase exploration, refactoring, and other
-  development tasks.
+- 💻 **[Continue](https://docs.continue.dev/)** —the development interface for VS Code, providing coding, editing, autocomplete, agents, project context and external tool integrations.
 
-External capabilities are connected through **MCP (Model Context Protocol)**
-and other tools. These integrations can be used by both **Open WebUI and
-Continue**, allowing local models to interact with services such as web
-search, documentation, GitHub, and other external resources when required.
+External capabilities can be added through **MCP (Model Context Protocol)** and other tools, allowing the AI to interact with services such as web search, Git, GitHub and external documentation.
 
 ```text
                     👩‍💻 USER
@@ -58,13 +64,6 @@ search, documentation, GitHub, and other external resources when required.
                        ▼
                   🧠 Ollama
                  Local Models
-                       │
-                       ▼
-                  🔌 MCP / Tools
-                       │
-              ┌────────┼────────┐
-              ▼        ▼        ▼
-           🌐 Web    📚 Docs   🐙 GitHub
 ```
 
 ## Installation
@@ -81,40 +80,103 @@ The project requires the following tools:
 - [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/) used to run and manage the local services and their dependencies in isolated containers.
 - [Make](https://man7.org/linux/man-pages/man1/make.1.html) provides simple commands to automate setup and environment management.
 
-> **Note:** Some of these tools may already be installed on your system.
-> You don't need to install them again if they are already available.
-
 ### 🎮 GPU & Hardware Acceleration
 
-GPU acceleration is **optional**. The setup automatically detects your available hardware and configures CPU and RAM usage accordingly.
+GPU acceleration is **optional**.
 
-By default, the environment uses **100% of available CPU cores** and up to **70% of system RAM**.
-
-You can check your detected hardware at any time with:
-
-```bash
-make system-info
-```
+The setup detects your available platform and configures Ollama accordingly.
 
 | Platform | Backend | Requirements |
 |---|---|---|
 | Linux | NVIDIA / CUDA | NVIDIA drivers + NVIDIA Container Toolkit |
-| Linux | AMD / ROCm | Compatible AMD GPU + ROCm |
-| macOS | Apple Metal | Ollama running natively (handled by setup) |
+| Linux | AMD / ROCm    | Compatible AMD GPU + ROCm |
+| macOS | Apple Metal   | Native Ollama to enable Apple GPU acceleration via Metal |
 | Other | CPU | No GPU required |
 
-> **macOS:** Docker cannot expose Apple's Metal GPU to an Ollama container.
-> The setup detects macOS and configures Ollama to run **natively**, allowing
-> it to use Apple GPU acceleration through Metal.
+You can check your detected hardware at any time with: `make system-info`.
 
-If no supported GPU is available, the environment automatically falls back to
-CPU inference.
+> [!NOTE] By default, the environment uses all available CPU cores and up to 70% of system or GPU RAM.
 
-### 🚀 Setup
+### 🚀 Quick Start
 
-1. Clone the repository: `git clone https://github.com/IciaCarroBarallobre/local-LLM-assistant` & `cd local-LLM-assistant`.
-2. Creates your local configuration file from the provided example and adjust it according your needs: `cp .env.example .env`
-3. Run the setup: `make setup`
-4. Once the setup is complete, open Open WebUI in your browser. By default, it is available at: `[http://localhost:3000](http://localhost:3000)`.
-5. Install [continue](https://docs.continue.dev/) in your IDE
-to use the local models directly from your development environment.
+1. Clone the repository:
+
+   ```sh
+   git clone https://github.com/IciaCarroBarallobre/local-LLM-assistant & cd local-LLM-assistant
+   ```
+
+2. Creates `.env` from the provided example and adjust the config files according your needs:
+
+   ```sh
+   cp .env.example .env
+   code .env
+   code ./config/continue/config.yaml
+   ```
+
+   ⚠️ `.env` may contain secrets.
+
+   💡 Configuration:
+     - 💬 **Open WebUI** — initialized from `.env`, then configurable from its UI.
+     - 💻 **Continue** — global configuration from `config/continue/config.yaml`, installed to `~/.continue/config.yaml` and shared across projects.
+
+3. Run the setup:
+
+   ```sh
+   make setup
+   ```
+
+4. Once setup is complete, open OpenWebUI in your browser:
+
+- [http://localhost:3000](http://localhost:3000).
+
+5. Once setup is complete, open a project in your IDE and find Continue in the Extensions panel. Continue project-specific configuration lives in each repository under `.continue/`.
+
+   ```txt
+   local-llm-assistant
+         │
+         │ Global AI infrastructure
+         ▼
+      ┌─────────────┐
+      │   Ollama    │
+      │   Continue  │
+      │   MCP/tools │
+      └──────┬──────┘
+            │
+      ┌─────┼─────┐
+      ▼     ▼     ▼
+   Project A  Project B  Project C
+      │          │          │
+   .continue/ .continue/ .continue/
+   ```
+
+For more detailed information, see the **[Services](#services)** section.
+
+## Services
+
+This section provides detailed information about the main services and tools that make up the environment.
+
+You can learn how each service works, how it is configured, and how to get the most out of its capabilities.
+
+### Continue
+
+The configuration is divided into two scopes:
+
+- 🌍 **Global configuration** - shared across projects. `config/continue/config.yaml` is installed to `~/.continue/config.yaml`.
+- 📦 **Project configuration** - each project can define its AI behaviour and context:
+
+  ```sh
+  .continue/ 
+  ├── 🤖 agents/ # Specialized AI agents 
+  ├── 📏 rules/ # Project-specific instructions 
+  └── 📚 knowledge/ # Project documentation and context
+    ```
+
+For more information, see: [docs/CONTINUE.md](docs/CONTINUE.md)
+
+### OpenWebui
+
+For more information, see: [docs/CONTINUE.md](docs/OPENWEBUI.md)
+
+### Ollama
+
+For more information, see: [docs/CONTINUE.md](docs/OLLAMA.md)
