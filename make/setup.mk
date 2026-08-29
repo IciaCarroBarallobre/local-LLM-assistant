@@ -2,20 +2,25 @@
 # Setup
 # ============================================================
 
-.PHONY: setup check-env
+.PHONY: setup check-env ensure-openwebui-key
 
-ENV_FILE := .env
+ENV_FILE    := .env
 ENV_EXAMPLE := .env.example
 
-setup: check-env ensure-openwebui-key system-info docker-up ollama-install ollama-download-models continue
+setup: check-env \
+       ensure-openwebui-key \
+       system-info \
+       docker-up \
+       ollama \
+       continue
 	@printf "\n"
 	@printf "$(SUCCESS)Setup complete!$(RESET) 🤖 Bip, bip.\n"
 	@printf "$(INFO)Visit OpenWebUI:$(RESET) http://localhost:$(OPENWEBUI_PORT)\n"
-	@printf "$(INFO)Open Continue Extension$(RESET)\n"
+	@printf "$(INFO)Open Continue Extension in your IDE$(RESET)\n"
 	@printf "\n"
 
 # ============================================================
-# Environment .env file
+# Environment
 # ============================================================
 
 check-env:
@@ -23,20 +28,18 @@ check-env:
 	@if [ ! -f "$(ENV_FILE)" ]; then \
 		printf "$(WARNING)Missing $(ENV_FILE).$(RESET)\n"; \
 		printf "\n"; \
-		printf "Run:\n"; \
+		printf "Create it with:\n"; \
 		printf "  cp $(ENV_EXAMPLE) $(ENV_FILE)\n"; \
 		printf "\n"; \
 		printf "Then customize $(ENV_FILE) if needed.\n"; \
-		printf "\n"; \
-		printf "$(INFO)Configure a provider API key to enable Web Search.$(RESET)\n"; \
-		printf "Without one, local models will work normally but will not have internet access.\n"; \
 		printf "\n"; \
 		exit 1; \
 	fi
 	@printf "$(ACTION) Using $(ENV_FILE) configuration.\n"
 
+
 # ============================================================
-# OpenWebUI Secret Key
+# Open WebUI
 # ============================================================
 #
 # Generate WEBUI_SECRET_KEY if it is missing or empty.
@@ -44,11 +47,15 @@ check-env:
 # ============================================================
 
 ensure-openwebui-key:
+	@if ! command -v openssl >/dev/null 2>&1; then \
+		printf "$(ERROR)OpenSSL is required to generate WEBUI_SECRET_KEY.$(RESET)\n"; \
+		exit 1; \
+	fi
 	@if [ -z "$$(grep '^WEBUI_SECRET_KEY=' "$(ENV_FILE)" | cut -d= -f2-)" ]; then \
 		KEY=$$(openssl rand -hex 32); \
-		if grep -q '^WEBUI_SECRET_KEY=' "$(ENV_FILE)"; then \
-			awk -v key="$$KEY" 'BEGIN {FS=OFS="="} /^WEBUI_SECRET_KEY=/ {$$2=key} {print}' "$(ENV_FILE)" > "$(ENV_FILE).tmp" && mv "$(ENV_FILE).tmp" "$(ENV_FILE)"; \
-		else \
-			printf '\nWEBUI_SECRET_KEY=%s\n' "$$KEY" >> "$(ENV_FILE)"; \
-		fi; \
+		awk -v key="$$KEY" \
+			'BEGIN {FS=OFS="="} /^WEBUI_SECRET_KEY=/ {$$2=key} {print}' \
+			"$(ENV_FILE)" > "$(ENV_FILE).tmp" && \
+			mv "$(ENV_FILE).tmp" "$(ENV_FILE)"; \
+		printf "$(SUCCESS)Generated WEBUI_SECRET_KEY.$(RESET)\n"; \
 	fi

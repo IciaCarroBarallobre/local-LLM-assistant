@@ -78,6 +78,8 @@ The project requires the following tools:
 
 - [Git](https://git-scm.com/) used to clone and update the repository.
 - [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/) used to run and manage the local services and their dependencies in isolated containers.
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop/) is recommended.
+  - On WSL2, Docker Desktop can be installed on Windows and used from WSL.
 - [Make](https://man7.org/linux/man-pages/man1/make.1.html) provides simple commands to automate setup and environment management.
 
 ### 🎮 GPU & Hardware Acceleration

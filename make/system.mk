@@ -13,8 +13,13 @@ else
 endif
 
 # ============================================================
-# GPU Backend
+# HARDWARE info
 # ============================================================
+
+#------------ GPU --------------------------------------------
+# Detect the available GPU backend.
+# macOS uses Apple's Metal backend.
+# Linux detects NVIDIA, AMD or falls back to CPU.
 
 ifeq ($(PLATFORM),mac)
 
@@ -34,9 +39,8 @@ else ifeq ($(PLATFORM),linux)
 
 endif
 
-# ============================================================
-# CPU
-# ============================================================
+#------------ CPU --------------------------------------------
+# Detect the number of physical CPU cores available to Ollama.
 
 ifeq ($(PLATFORM),linux)
 
@@ -48,9 +52,8 @@ else ifeq ($(PLATFORM),mac)
 
 endif
 
-# ============================================================
-# Memory
-# ============================================================
+#------------ RAM --------------------------------------------
+# Detect the total system RAM in MB.
 
 ifeq ($(PLATFORM),linux)
 
@@ -69,33 +72,51 @@ endif
 # ============================================================
 # Ollama Resources
 # ============================================================
-
 # Defaults:
-#   CPU:    100% of available physical cores
-#   Memory: 70% of available system RAM
+#   CPU:       100% of available physical cores
+#   Memory:    70% of available system RAM
+#   Base URL:  http://host.docker.internal:11434 (macOS)
+#              http://ollama:11434 (Linux / Docker)
 
-# ============================================================
-# Ollama Resources
-# ============================================================
-
+#------------ Ollama CPU --------------------------------------
 ifeq ($(strip $(OLLAMA_CPUS)),)
-    OLLAMA_CPUS := $(CPU_COUNT)
-    OLLAMA_CPUS_SOURCE := auto
+	OLLAMA_CPUS := $(CPU_COUNT)
+	OLLAMA_CPUS_SOURCE := auto
 else
-    OLLAMA_CPUS_SOURCE := config
+	OLLAMA_CPUS_SOURCE := config
 endif
 
+#------------ Ollama RAM --------------------------------------
 ifeq ($(strip $(OLLAMA_MEMORY)),)
-    OLLAMA_MEMORY := $(shell \
-        echo $$(( $(RAM_MB) * 70 / 100 ))m \
-    )
-    OLLAMA_MEMORY_SOURCE := auto
+	OLLAMA_MEMORY := $(shell \
+    	echo $$(( $(RAM_MB) * 70 / 100 ))m \
+	)
+	OLLAMA_MEMORY_SOURCE := auto
 else
-    OLLAMA_MEMORY_SOURCE := config
+	OLLAMA_MEMORY_SOURCE := config
+endif
+
+#------------ Ollama URL --------------------------------------
+# URL used by Docker containers to connect to Ollama.
+#
+# macOS:
+#   Ollama runs natively on the host, so containers use
+#   host.docker.internal to reach it.
+#
+# Linux:
+#   Ollama runs as a Docker service, so containers use
+#   the service name "ollama" through the Docker network.
+
+ifeq ($(PLATFORM),mac)
+	OLLAMA_BASE_URL := http://host.docker.internal:$(OLLAMA_PORT)
+	OLLAMA_BASE_URL_SOURCE := auto
+else
+	OLLAMA_BASE_URL := http://ollama:$(OLLAMA_PORT)
+	OLLAMA_BASE_URL_SOURCE := auto
 endif
 
 # ============================================================
-# System Information
+# Print System Information
 # ============================================================
 
 .PHONY: system-info
