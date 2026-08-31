@@ -9,7 +9,7 @@ services:
 
     environment:
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
-      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
 
       # Web Search
       - ENABLE_WEB_SEARCH=${ENABLE_WEB_SEARCH}
