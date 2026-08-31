@@ -75,8 +75,8 @@ endif
 # Defaults:
 #   CPU:       100% of available physical cores
 #   Memory:    70% of available system RAM
-#   Base URL:  http://host.docker.internal:11434 (macOS)
-#              http://ollama:11434 (Linux / Docker)
+#   Base URL:  host.docker.internal:<OLLAMA_PORT> (macOS)
+#              ollama:<OLLAMA_PORT> (Linux / Docker)
 
 #------------ Ollama CPU --------------------------------------
 ifeq ($(strip $(OLLAMA_CPUS)),)

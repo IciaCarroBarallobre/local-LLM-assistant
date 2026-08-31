@@ -4,15 +4,14 @@
 
 .PHONY: setup check-env ensure-openwebui-key
 
-ENV_FILE    := .env
-ENV_EXAMPLE := .env.example
-
 setup: check-env \
        ensure-openwebui-key \
        system-info \
        docker-up \
        ollama \
        continue
+	@printf "\n"
+	@$(MAKE) wait-openwebui
 	@printf "\n"
 	@printf "$(SUCCESS)Setup complete!$(RESET) 🤖 Bip, bip.\n"
 	@printf "$(INFO)Visit OpenWebUI:$(RESET) http://localhost:$(OPENWEBUI_PORT)\n"
@@ -26,16 +25,16 @@ setup: check-env \
 check-env:
 	@printf "\n"
 	@if [ ! -f "$(ENV_FILE)" ]; then \
-		printf "$(WARNING)Missing $(ENV_FILE).$(RESET)\n"; \
+		printf "$(WARNING)Missing .env.$(RESET)\n"; \
 		printf "\n"; \
 		printf "Create it with:\n"; \
 		printf "  cp $(ENV_EXAMPLE) $(ENV_FILE)\n"; \
 		printf "\n"; \
-		printf "Then customize $(ENV_FILE) if needed.\n"; \
+		printf "Then customize .env if needed.\n"; \
 		printf "\n"; \
 		exit 1; \
 	fi
-	@printf "$(ACTION) Using $(ENV_FILE) configuration.\n"
+	@printf "$(ACTION) Using .env configuration.\n"
 
 
 # ============================================================
@@ -59,3 +58,29 @@ ensure-openwebui-key:
 			mv "$(ENV_FILE).tmp" "$(ENV_FILE)"; \
 		printf "$(SUCCESS)Generated WEBUI_SECRET_KEY.$(RESET)\n"; \
 	fi
+
+# ============================================================
+# Teardown
+# ============================================================
+
+.PHONY: teardown
+
+teardown:
+	@printf "\n"
+	@printf "🧹 Local LLM Assistant teardown\n"
+	@printf "================================\n"
+	@printf "\n"
+	@printf "This will remove the local AI environment:\n"
+	@printf "  🐳 Docker containers, volumes and images\n"
+	@printf "  🦙 Ollama models and data\n"
+	@printf "  💬 Open WebUI data\n"
+	@printf "\n"
+	@printf "$(WARNING)Project files and configuration will be kept.$(RESET)\n"
+	@printf "$(WARNING)This action cannot be undone.$(RESET)\n"
+	@printf "\n"
+
+	@$(MAKE) docker-clean
+	@$(MAKE) ollama-clean
+
+	@printf "\n"
+	@printf "$(SUCCESS)Environment removed.$(RESET)\n"
