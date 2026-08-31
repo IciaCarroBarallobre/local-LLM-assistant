@@ -5,9 +5,9 @@
 .PHONY: continue continue-check
 
 CONTINUE_DIR       := $(HOME)/.continue
-CONTINUE_SOURCE_DIR := $(dir $(CONTINUE_CONFIG))
-CONTINUE_CONFIG := $(CONTINUE_CONFIG)
-CONTINUE_EXTENSION := Continue.continue
+CONTINUE_SOURCE    := $(CURDIR)/config/continue/config.yaml
+CONTINUE_CONFIG    := $(CONTINUE_DIR)/config.yaml
+CONTINUE_EXTENSION := continue.continue
 
 
 # ==========================================================
@@ -44,12 +44,19 @@ ifeq ($(ENABLE_CONTINUE),true)
 
 	@printf " $(ACTION) Configuring Continue...\n"
 
+	@if [ ! -f "$(CONTINUE_SOURCE)" ]; then \
+		printf "   $(ERROR)$(RESET) Continue source config not found.\n"; \
+		printf "   Expected: $(CONTINUE_SOURCE)\n"; \
+		exit 1; \
+	fi
+
 	@mkdir -p "$(CONTINUE_DIR)"
 
-	@# TODO: Generate config.yaml from models.json
+	@cp "$(CONTINUE_SOURCE)" "$(CONTINUE_CONFIG)"
 
-	@printf "   $(SUCCESS)$(RESET) Continue configuration ready.\n"
-	@printf "   Config: $(CONTINUE_CONFIG)\n"
+	@printf "   $(SUCCESS)$(RESET) Continue configuration synchronized.\n"
+	@printf "   Source: $(CONTINUE_SOURCE)\n"
+	@printf "   Target: $(CONTINUE_CONFIG)\n"
 
 else
 
@@ -79,10 +86,17 @@ ifeq ($(ENABLE_CONTINUE),true)
 		exit 1; \
 	fi
 
-	@if [ -f "$(CONTINUE_CONFIG)" ]; then \
-		printf "   $(SUCCESS)$(RESET) Continue config found.\n"; \
+	@if [ -f "$(CONTINUE_SOURCE)" ]; then \
+		printf "   $(SUCCESS)$(RESET) Continue source config found.\n"; \
 	else \
-		printf "   $(ERROR)$(RESET) Continue config not found.\n"; \
+		printf "   $(ERROR)$(RESET) Continue source config not found.\n"; \
+		exit 1; \
+	fi
+
+	@if [ -f "$(CONTINUE_CONFIG)" ]; then \
+		printf "   $(SUCCESS)$(RESET) Continue installed config found.\n"; \
+	else \
+		printf "   $(ERROR)$(RESET) Continue installed config not found.\n"; \
 		exit 1; \
 	fi
 

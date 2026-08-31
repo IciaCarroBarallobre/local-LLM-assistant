@@ -1,2 +1,13 @@
+# Environment
 .env
-docs/incomplete.md
+
+# Generated / local knowledge
+.continue/knowledge/dependencies/
+.continue/knowledge/index/
+
+# Local Continue configuration
+.continue/
+
+# OS / editor
+.DS_Store
+.vscode/
